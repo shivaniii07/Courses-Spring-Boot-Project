@@ -1,10 +1,13 @@
 package com.course.service;
 
+import com.course.model.Otp;
+import com.course.repository.OtpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -14,12 +17,14 @@ public class OtpService {
 
     @Autowired
     private JavaMailSender emailSender;
+    @Autowired
+    OtpRepository otpRepository;
 
     //to generate random number
     private final Random random=new Random();
     //generate random integer
     public String generateOtp(){
-        return String.format("%06d",random.nextInt(1000000));
+        return String.format("%06d",random.nextInt(1000000));//generate a 6-digit otp
     }
     //to send otp to required email
     public void sendOtp(String email, String otp){
@@ -31,18 +36,23 @@ public class OtpService {
     }
 
     //otp storage and validation
-    private Map<String,String > otpStorage=new HashMap<>(); //storing the otp
-    private Map<String ,Long>otpExpiry=new HashMap<>(); //storing expiring time
 
     public void storeOtp(String email,String otp){
-       otpStorage.put(email,otp);
-       otpExpiry.put(email,System.currentTimeMillis()+300000); //valid for 5 mins.. 5*60*1000
+        LocalDateTime expiryTime=LocalDateTime.now().plusMinutes(5);//otp valid for 5 mins
+        Otp otpEntity = new Otp(email,otp,expiryTime);
+        otpRepository.save(otpEntity);
     }
 
     public boolean validOtp(String email,String otp){
-        if(otpExpiry.containsKey(email) && otpExpiry.get(email)> System.currentTimeMillis()){
-            return otp.equals(otpStorage.get(email));
-        }
-        return false;
+        return otpRepository.findByEmail(email).map(storedOtp->{
+            boolean isValid = storedOtp.getOtp().equals(otp) && LocalDateTime.now().isBefore(storedOtp.getExpiryTime());
+            if(!isValid){
+//                //optionally removed expired otp
+                otpRepository.deleteByEmail(email);
+            }
+            return isValid;
+        })
+        .orElse(false);
     }
+
 }

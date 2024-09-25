@@ -25,7 +25,7 @@ public class Student {
     private String lastName;
 
 
-    @Column(name="emailId")
+    @Column(name="emailId",unique = true)
     @NotBlank(message ="Email id is mandatory")
     private String emailId;
 
@@ -42,8 +42,8 @@ public class Student {
     private String password;
 
 
-    @Column(name="confirmPass")
-    @NotBlank(message = "confirm password is mandatory")
+    @Transient
+//    @NotBlank(message = "confirm password is mandatory")
     private String confirmPassword;
 
 
