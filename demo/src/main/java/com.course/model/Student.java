@@ -6,6 +6,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name="student_shivani")
 public class Student {
@@ -51,6 +54,18 @@ public class Student {
     @Column(name="Address")
     @Valid
     private Address address;
+    @OneToMany()
+    private List<Enrollment> enrollments=new ArrayList<>();
+
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+
+
 
     // getter ,setter ,constructor
     public Student(String rollNo, String firstName, String lastName,

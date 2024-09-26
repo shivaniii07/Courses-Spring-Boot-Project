@@ -66,4 +66,11 @@ public class StudentController {
         }
     }
 
+    //studentsEnrolled api
+    @GetMapping("/{email}/enrollCount")
+    public ResponseEntity<Long> getEnrollmentCount(@PathVariable String email){
+      Long count=studentService.getEnrollmentCourse(email);
+      return ResponseEntity.ok(count);
+    }
+
 }
