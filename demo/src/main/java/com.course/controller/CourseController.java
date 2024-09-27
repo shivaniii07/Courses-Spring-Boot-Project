@@ -39,10 +39,10 @@ public class CourseController {
     //enrolled student
     @PostMapping("/{courseId}/enroll")
     public ResponseEntity<?> enrollStudent(
-            @PathVariable Long courseId, @RequestParam String studentName, @RequestParam String studentEmail
+            @PathVariable Long courseId, @RequestParam String studentEmail
     ){
         try{
-            courseService.enrollStudent(studentName,studentEmail,courseId);
+            courseService.enrollStudent(studentEmail,courseId);
             return ResponseEntity.ok("Successfully enrolled in the course");
         }catch (IllegalArgumentException ex){
           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

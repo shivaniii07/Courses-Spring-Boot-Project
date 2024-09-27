@@ -13,11 +13,22 @@ public class LoginService {
     StudentRepository studentRepository;
 
     public boolean validateLogin(String email,String password){
+        //retrieve the student by email
         Optional<Student> optionalStudent=studentRepository.findByEmailId(email);
+        //check if student exists
         if(optionalStudent.isPresent()){
             Student student=optionalStudent.get();
-            return password.equals(student.getPassword());
+            //check if pass matches
+            boolean passMatch= password.equals(student.getPassword());
+            //check if the otp is verified
+            boolean otpVerified= student.isOtpVerified();
+            //if both conditions are met
+            if(passMatch && otpVerified){
+                return true;//login successfull
+            }else{
+                return false;//either pass does not match or otp not verified
+            }
         }
-        return false;
+        return false; //user not found
     }
 }

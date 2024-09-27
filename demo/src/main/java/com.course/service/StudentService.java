@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
@@ -29,9 +30,14 @@ public class StudentService {
             return studentRepository.save(student);
 
     }
+    //get courses by student id
+    public List getCoursesByStudentEmail(String studentEmail){
+        Student student=studentRepository.findByEmailId(studentEmail)
+                .orElseThrow(()-> new RuntimeException("Student not found"));
 
-    public long getEnrollmentCourse(String studentEmail){
-        List<Enrollment> enrollments=enrollmentRepository.findByStudentEmail(studentEmail);
-        return enrollments.size();
+        List<Enrollment> enrollments=enrollmentRepository.findByStudent(student);
+        return enrollments.stream()
+                .map(Enrollment::getCourse)
+                .collect(Collectors.toList());
     }
 }

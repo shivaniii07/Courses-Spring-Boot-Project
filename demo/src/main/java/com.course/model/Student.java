@@ -54,8 +54,12 @@ public class Student {
     @Column(name="Address")
     @Valid
     private Address address;
-    @OneToMany()
-    private List<Enrollment> enrollments=new ArrayList<>();
+
+    @Column(name="otp_verified")
+    private Boolean otpVerified=false;
+
+    @OneToMany(mappedBy = "student")
+    private List<Enrollment> enrollments;
 
     public List<Enrollment> getEnrollments() {
         return enrollments;
@@ -65,12 +69,23 @@ public class Student {
         this.enrollments = enrollments;
     }
 
+    public Boolean isOtpVerified() {
+        return otpVerified!= null ? otpVerified : false; // Return false if null
+    }
 
+    public void setOtpVerified(Boolean otpVerified) {
+        this.otpVerified = otpVerified;
+    }
+
+
+    public Student(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
 
     // getter ,setter ,constructor
     public Student(String rollNo, String firstName, String lastName,
                    String emailId, String mobile, String password,
-                   String confirmPassword, Address address) {
+                   String confirmPassword, Address address,Boolean otpVerified) {
         this.rollNo = rollNo;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -79,9 +94,11 @@ public class Student {
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.address = address;
+        this.otpVerified = otpVerified != null ? otpVerified : false; // Default to false if null
     }
 
-    public Student(){}
+    public Student(){
+    }
 
     public String getRollNo() {
         return rollNo;

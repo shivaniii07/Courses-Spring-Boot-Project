@@ -39,22 +39,23 @@ public class CourseService {
     // save the name and email of the student
     //and increment the student erolled by 1
 
-    public void enrollStudent(String studentName,String studentEmail,Long courseId){
+    public void enrollStudent(String studentEmail,Long courseId){
 
         //check if student is registered
         Optional<Student>optionalStudent=studentRepository.findByEmailId(studentEmail);
         if(!optionalStudent.isPresent()){
             throw new IllegalArgumentException("Student not registered");
         }
-
+        //get registered student
+        Student student=optionalStudent.get();
+        //find the course
         Course course=courseRepository.findById(courseId).orElseThrow(()->
             new IllegalArgumentException("Course not found with id:"+courseId));
 
         //create a new enrollment entry
         Enrollment enrollment=new Enrollment();
-        enrollment.setStudentName(studentName);
-        enrollment.setStudentEmail(studentEmail);
         enrollment.setCourse(course);
+        enrollment.setStudent(student);
 
         //save the enrollment
         enrollmentRepository.save(enrollment);
