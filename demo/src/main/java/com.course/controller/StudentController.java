@@ -89,7 +89,7 @@ public class StudentController {
         if(isValid){
             return ResponseEntity.ok("Login successfull");
         }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password or OTP not verified");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("OTP not verified");
         }
     }
 
@@ -99,6 +99,9 @@ public class StudentController {
         List<Course>courses=studentService.getCoursesByStudentEmail(studentEmail);
         if(courses==null || courses.isEmpty()){
             throw new StudentNotFoundException("Student not found with the email:"+studentEmail);
+            //ResponseEntity.status(HttpStatus.NOT_FOUND).body("student not found");
+
+
         }
         return ResponseEntity.ok(courses);
     }

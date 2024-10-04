@@ -4,6 +4,7 @@ package com.course.model;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ public class Student {
 
     @Column(name="emailId",unique = true)
     @NotBlank(message ="Email id is mandatory")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            message = "Email should be in a correct format"
+    )
     private String emailId;
 
 

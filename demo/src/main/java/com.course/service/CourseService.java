@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -30,10 +32,38 @@ public class CourseService {
     public List<Course> getAllCourses(){
       return courseRepository.findAll();
     }
+    //get course by course name
+    public List<Course> getCourseByName(String courseName){
+        List<Course> courses=getAllCourses();
+        return courses.stream().filter(course ->course.getCourseName().equalsIgnoreCase(courseName))
+                .collect(Collectors.toList());
+    }
+    //get courses by different parameters
+    public List<Course> getByParameter(Map<String ,String> mapOfParameter){
+        List<Course> courses=getAllCourses();
+        for(String key: mapOfParameter.keySet()){
+            courses=courses.stream().filter(course -> getField(key,course).equalsIgnoreCase(mapOfParameter.get(key)))
+                    .collect(Collectors.toList());
+        }
+        return courses;
+    }
+    public String getField(String key,Course course){
+        switch (key){
+            case "courseName":
+                return course.getCourseName();
+            case "duration":
+                return course.getDuration();
+            case "teacherName":
+                return course.getTeacherName();
+            default:
+            return "";
+        }
+    }
     //get course by id
     public Course getCourseById(Long id){
         return courseRepository.findById(id).orElse(null);
     }
+
 
     //enroll the student
     // save the name and email of the student
@@ -52,6 +82,11 @@ public class CourseService {
         Course course=courseRepository.findById(courseId).orElseThrow(()->
             new IllegalArgumentException("Course not found with id:"+courseId));
 
+         //check if student is already enrolled in the course
+        Optional<Enrollment>existingEnrollment=enrollmentRepository.findByStudentAndCourse(student,course);
+        if(existingEnrollment.isPresent()){
+            throw new IllegalArgumentException("Student is already enrolled in the course");
+        }
         //create a new enrollment entry
         Enrollment enrollment=new Enrollment();
         enrollment.setCourse(course);

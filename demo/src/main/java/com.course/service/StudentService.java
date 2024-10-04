@@ -1,5 +1,6 @@
 package com.course.service;
 
+import com.course.exception.StudentNotFoundException;
 import com.course.model.Enrollment;
 import com.course.model.Student;
 import com.course.repository.EnrollmentRepository;
@@ -24,16 +25,21 @@ public class StudentService {
 
     //save student in database
     public Student saveStudent(Student student){
+        //email duplicacy
         if (studentRepository.findByEmailId(student.getEmailId()).isPresent()) {
           throw new IllegalArgumentException("Email is already in use");
        }
+        //roll number duplicacy
+        if(studentRepository.existsByRollNo(student.getRollNo())){
+            throw new IllegalArgumentException("Roll number is already in use");
+        }
             return studentRepository.save(student);
 
     }
     //get courses by student id
-    public List getCoursesByStudentEmail(String studentEmail){
+    public List getCoursesByStudentEmail(String studentEmail) throws StudentNotFoundException {
         Student student=studentRepository.findByEmailId(studentEmail)
-                .orElseThrow(()-> new RuntimeException("Student not found"));
+                .orElseThrow(()-> new StudentNotFoundException("Student not found"));
 
         List<Enrollment> enrollments=enrollmentRepository.findByStudent(student);
         return enrollments.stream()

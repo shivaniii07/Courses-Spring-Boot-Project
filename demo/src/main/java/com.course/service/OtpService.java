@@ -2,6 +2,7 @@ package com.course.service;
 
 import com.course.model.Otp;
 import com.course.repository.OtpRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -42,7 +43,7 @@ public class OtpService {
         Otp otpEntity = new Otp(email,otp,expiryTime);
         otpRepository.save(otpEntity);
     }
-
+    @Transactional
     public boolean validOtp(String email,String otp){
         return otpRepository.findByEmail(email).map(storedOtp->{
             boolean isValid = storedOtp.getOtp().equals(otp) && LocalDateTime.now().isBefore(storedOtp.getExpiryTime());

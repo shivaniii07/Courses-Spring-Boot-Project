@@ -3,6 +3,7 @@ package com.course.model;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="courses_shivani")
@@ -31,6 +32,9 @@ public class Course {
 
     @Column(name = "students_enroll")
     private int studentsEnrolled;
+
+    @OneToMany(mappedBy = "course")
+    private Set<Enrollment> enrollments;
 
     //getter setter
     public int getStudentsEnrolled() {
